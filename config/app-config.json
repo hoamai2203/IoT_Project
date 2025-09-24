@@ -1,0 +1,76 @@
+{
+  "app": {
+    "name": "IoT Smart Home",
+    "version": "1.0.0",
+    "description": "Smart home monitoring and control system"
+  },
+  "profile": {
+    "name": "Nông Thị Hoa Mai",
+    "email": "nongthihoamai@gmail.com",
+    "phone": "0868515203",
+    "address": "Mỗ Lao, Hà Đông, TP.HN",
+    "avatar": "/assets/images/avatar.jpg"
+  },
+  "sensors": {
+    "dht11": {
+      "name": "DHT11",
+      "description": "Temperature & Humidity Sensor",
+      "unit": {
+        "temperature": "°C",
+        "humidity": "%"
+      },
+      "min": {
+        "temperature": -40,
+        "humidity": 0
+      },
+      "max": {
+        "temperature": 80,
+        "humidity": 100
+      }
+    },
+    "bh1750": {
+      "name": "BH1750",
+      "description": "Light Intensity Sensor",
+      "unit": "lux",
+      "min": 0,
+      "max": 65535
+    }
+  },
+  "devices": {
+    "led1": {
+      "name": "Đèn 1",
+      "description": "LED Light 1",
+      "type": "light",
+      "location": "Phòng khách"
+    },
+    "led2": {
+      "name": "Đèn 2", 
+      "description": "LED Light 2",
+      "type": "light",
+      "location": "Phòng ngủ"
+    },
+    "led3": {
+      "name": "Đèn 3",
+      "description": "LED Light 3", 
+      "type": "light",
+      "location": "Nhà bếp"
+    }
+  },
+  "ui": {
+    "primaryColor": "#2196F3",
+    "secondaryColor": "#FFC107",
+    "successColor": "#4CAF50",
+    "errorColor": "#F44336",
+    "warningColor": "#FF9800",
+    "infoColor": "#2196F3",
+    "backgroundColor": "#F5F5F5",
+    "textColor": "#333333",
+    "borderColor": "#E0E0E0"
+  },
+  "api": {
+    "defaultPageSize": 10,
+    "maxPageSize": 100,
+    "defaultSortField": "created_at",
+    "defaultSortOrder": "DESC"
+  }
+}

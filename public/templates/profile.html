@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IoT Dashboard — Hồ sơ</title>
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/theme.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo"></div><div class="brand-text">IoT Dashboard</div></div>
+      <nav class="nav">
+        <a href="/">🏠 Trang chủ</a>
+        <a href="/templates/sensor-data.html">📟 Dữ liệu Cảm biến</a>
+        <a href="/templates/activity-history.html">🕘 Lịch sử Hành động</a>
+        <a class="active" href="/templates/profile.html">👤 Hồ sơ</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="page-head"><h2>Thông tin cá nhân</h2></div>
+
+      <section class="profile-card" id="profileSection">
+        <div class="profile-header">
+          <img id="profileAvatar" src="https://i.pravatar.cc/80" alt="avatar" class="avatar" />
+          <h3 id="profileName">--</h3>
+        </div>
+
+        <div class="profile-grid">
+          <div class="col">
+            <label>Họ và tên</label>
+            <input id="profileFullName" type="text" value="Nông Thị Hoa Mai" readonly />
+            <label>Mã sinh viên</label>
+            <input id="profileCode" type="text" value="B22DCCN515" readonly />
+            <label>Email</label>
+            <input id="profileEmail" type="email" value="nongthihoamai@gmail.com" readonly />
+          </div>
+
+          <div class="col">
+            <label>Tên dự án</label>
+            <input id="profileProject" type="text" value="Hệ thống cảm biến IOT" readonly />
+            <label>Link Github</label>
+            <div class="github-input">
+              <input id="profileGithub" type="url" value="" readonly />
+              <button class="btn-copy" aria-label="Copy">📋</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn" style="background:#f39c12;color:#fff">⬆️ Upload báo cáo</button>
+          <button class="btn" style="background:#e74c3c;color:#fff">📄 Xem báo cáo</button>
+          <button class="btn" style="background:#f1c40f;color:#222">🔒 Đổi mật khẩu</button>
+          <button class="btn" style="background:#9b59b6;color:#fff">💾 Lưu thay đổi</button>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="/js/config.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/pages/profilePage.js"></script>
+</body>
+</html>

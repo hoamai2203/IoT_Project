@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IoT Dashboard — Trang chủ</title>
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/theme.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo"></div>
+        <div class="brand-text">IoT Dashboard</div>
+      </div>
+      <nav class="nav">
+        <a class="active" href="/">🏠 Trang chủ</a>
+        <a href="/templates/sensor-data.html">📟 Dữ liệu Cảm biến</a>
+        <a href="/templates/activity-history.html">🕘 Lịch sử Hành động</a>
+        <a href="/templates/profile.html">👤 Hồ sơ</a>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="page-head">
+        <h2>Trang chủ</h2>
+      </div>
+
+      <!-- cards -->
+      <section class="cards">
+        <article class="card">
+          <div class="card-dot dot-red"></div>
+          <div class="card-title">Nhiệt độ<br><span class="sub">Temperature</span></div>
+          <div class="card-value" id="temperatureValue">--°C</div>
+          <div class="card-note"><span id="temperatureTime">--:--</span></div>
+        </article>
+        <article class="card">
+          <div class="card-dot dot-blue"></div>
+          <div class="card-title">Độ ẩm<br><span class="sub">Humidity</span></div>
+          <div class="card-value" id="humidityValue">--%</div>
+          <div class="card-note"><span id="humidityTime">--:--</span></div>
+        </article>
+        <article class="card">
+          <div class="card-dot dot-yellow"></div>
+          <div class="card-title">Ánh sáng<br><span class="sub">Lux</span></div>
+          <div class="card-value" id="lightValue">-- lux</div>
+          <div class="card-note"><span id="lightTime">--:--</span></div>
+        </article>
+      </section>
+
+      <!-- device control -->
+      <section class="panel">
+        <div class="panel-head">
+          <h3>Điều khiển Thiết bị</h3>
+          <button class="btn danger">Tắt tất cả</button>
+        </div>
+
+        <div class="panel-body">
+          <div class="device">
+            <div>
+              <div style="font-weight:700">Đèn LED 1</div>
+              <div style="font-size:12px;color:#666">Phòng khách • <span id="led1Status">Tắt</span></div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" class="device-switch" id="led1Toggle" data-device="led1">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="device">
+            <div>
+              <div style="font-weight:700">Đèn LED 2</div>
+              <div style="font-size:12px;color:#666">Phòng ngủ • <span id="led2Status">Tắt</span></div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" class="device-switch" id="led2Toggle" data-device="led2">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="device">
+            <div>
+              <div style="font-weight:700">Đèn LED 3</div>
+              <div style="font-size:12px;color:#666">Bếp • <span id="led3Status">Tắt</span></div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" class="device-switch" id="led3Toggle" data-device="led3">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- single realtime chart -->
+      <section class="charts" style="grid-template-columns: 1fr">
+        <article class="chart-card" style="height:440px;width:100%">
+          <div class="chart-title">Cảm biến Realtime</div>
+          <div class="chart-legend"><span class="legend-dot red"></span>Nhiệt độ <span class="legend-dot blue"></span>Độ
+            ẩm <span class="legend-dot orange"></span>Lux</div>
+          <div class="chart-box" style="height:360px;width:100%">
+            <canvas id="sensorChart"></canvas>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+  <div id="toastContainer" style="position:fixed;top:16px;right:16px;z-index:9999"></div>
+  <div id="loadingOverlay"
+    style="display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.25);align-items:center;justify-content:center;color:#fff;font-weight:700">
+    Loading...</div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/websocket.js"></script>
+  <script src="/js/pages/dashboard.js"></script>
+  <script src="/js/main.js"></script>
+</body>
+
+</html>

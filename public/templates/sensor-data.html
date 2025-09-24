@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IoT Dashboard — Dữ liệu Cảm biến</title>
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/theme.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo"></div><div class="brand-text">IoT Dashboard</div></div>
+      <nav class="nav">
+        <a href="/">🏠 Trang chủ</a>
+        <a class="active" href="/templates/sensor-data.html">📟 Dữ liệu Cảm biến</a>
+        <a href="/templates/activity-history.html">🕘 Lịch sử Hành động</a>
+        <a href="/templates/profile.html">👤 Hồ sơ</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="page-head"><h2>Dữ liệu Cảm biến</h2></div>
+
+      <div class="toolbar">
+        <div class="search">
+          <input id="sensorSearchInput" type="text" placeholder="Giá trị cần tìm">
+          <button id="sensorSearchBtn" class="btn-search" aria-label="Tìm">🔍</button>
+        </div>
+        <select id="sensorFieldSelect" class="filter" title="Trường">
+          <option value="">Tất cả</option>
+          <option value="temperature">Nhiệt độ</option>
+          <option value="humidity">Độ ẩm</option>
+          <option value="light_intensity">Ánh sáng</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table id="sensorTable">
+          <thead>
+            <tr>
+              <th data-sort="id">ID</th>
+              <th data-sort="temperature">Nhiệt độ</th>
+              <th data-sort="humidity">Độ ẩm</th>
+              <th data-sort="light_intensity">Ánh sáng</th>
+              <th data-sort="created_at">Thời gian</th>
+            </tr>
+          </thead>
+          <tbody id="sensorTbody"></tbody>
+        </table>
+      </div>
+
+      <div id="sensorPagination" class="pagination"></div>
+    </main>
+  </div>
+  <script src="/js/config.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/utils/list-page.js"></script>
+  <script src="/js/pages/sensorData.js"></script>
+</body>
+</html>
