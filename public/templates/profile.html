@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/css/variables.css">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/theme.css">
+
 </head>
 <body>
   <div class="layout">
@@ -41,24 +42,31 @@
 
           <div class="col">
             <label>Tên dự án</label>
-            <input id="profileProject" type="text" value="Hệ thống cảm biến IOT" readonly />
+            <input id="profileProject" type="text" value="Hệ thống cảm biến IoT" readonly />
             <label>Link Github</label>
             <div class="github-input">
-              <input id="profileGithub" type="url" value="" readonly />
-              <button class="btn-copy" aria-label="Copy">📋</button>
+            <a href="https://github.com/hoamai2203/IoT_Project" target="_blank" 
+            style="display: block; box-sizing: border-box; width: 100%; padding: 10px; margin: 6px 0px 12px; border: 1px solid rgb(221, 221, 221); border-radius: 6px; background: rgb(251, 236, 236); color: rgb(51, 51, 51); text-decoration: none; text-align: left:"";">Link tới dự án GitHub</a>
+            
+              
             </div>
+            <label>Link Postman</label>
+            <div class="postman-input">
+            
+            <a href="https://gh7777-1521.postman.co/workspace/Test~0f8e0f39-9d6e-4353-bba6-13fd9f0325e5/collection/44284033-90d37ad7-5ccb-495b-8c2b-4cbb2a28526e?action=share&source=copy-link&creator=44284033" target="_blank" 
+            style="display: block; box-sizing: border-box; width: 100%; padding: 10px; margin: 6px 0px 12px; border: 1px solid rgb(221, 221, 221); border-radius: 6px; background: rgb(251, 236, 236); color: rgb(51, 51, 51); text-decoration: none; text-align: left:"";">Link tới bộ sưu tập Postman</a>
           </div>
         </div>
 
         <div class="actions">
-          <button class="btn" style="background:#f39c12;color:#fff">⬆️ Upload báo cáo</button>
-          <button class="btn" style="background:#e74c3c;color:#fff">📄 Xem báo cáo</button>
-          <button class="btn" style="background:#f1c40f;color:#222">🔒 Đổi mật khẩu</button>
-          <button class="btn" style="background:#9b59b6;color:#fff">💾 Lưu thay đổi</button>
+
+          <!-- Xem báo cáo -->
+          <button id="btnShowReport" class="btn" style="background:#e74c3c;color:#fff">📄 Xem báo cáo</button>
         </div>
       </section>
     </main>
   </div>
+
   <script src="/js/config.js"></script>
   <script src="/js/api.js"></script>
   <script src="/js/pages/profilePage.js"></script>

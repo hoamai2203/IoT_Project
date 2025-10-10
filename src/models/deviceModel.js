@@ -181,7 +181,7 @@ class DeviceModel {
       `;
       
       const results = await database.query(sql, [deviceId, limit]);
-      return results;
+      return results.reverse();
     } catch (error) {
       console.error('Error finding device control history:', error);
       throw error;

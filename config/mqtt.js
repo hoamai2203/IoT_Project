@@ -1,5 +1,6 @@
 const mqtt = require('mqtt');
 const config = require('./index');
+const eventEmitter = require('../src/events/eventEmitter');
 
 class MQTTClient {
   constructor() {
@@ -12,6 +13,10 @@ class MQTTClient {
     this.isShuttingDown = false;
   }
   
+  getClient() {
+    return this.client;
+  }
+
   async connect() {
     try {
       const options = {
@@ -31,27 +36,40 @@ class MQTTClient {
       // Attach listeners
       this.client.on('error', (error) => {
         console.error('MQTT client error:', error);
-        this.isConnected = false;
+        if (this.isShuttingDown) return; // Không xử lý nếu đang tắt
+        
+        if (this.isConnected) {
+            this.isConnected = false;
+            eventEmitter.emit('mqtt_disconnected');
+        }
         if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-          try { this.client.end(true); } catch (_) {}
+          // ADDED CHECK: Thêm kiểm tra an toàn
+          if (this.client) try { this.client.end(true); } catch (_) {}
         }
       });
 
       this.client.on('close', () => {
-        this.isConnected = false;
+        if (this.isShuttingDown) return; // Không xử lý nếu đang tắt
+        if (this.isConnected) {
+          this.isConnected = false;
+          console.warn('MQTT connection closed.');
+          eventEmitter.emit('mqtt_disconnected');
+        }
       });
 
       this.client.on('reconnect', () => {
         if (this.isShuttingDown) {
-          // Ensure no further reconnects during shutdown
-          try { this.client.end(true); } catch (_) {}
+          // ADDED CHECK: Thêm kiểm tra an toàn
+          if (this.client) try { this.client.end(true); } catch (_) {}
           return;
         }
         this.reconnectAttempts++;
         console.warn(`MQTT client reconnecting... (attempt ${this.reconnectAttempts})`);
         if (this.reconnectAttempts >= this.maxReconnectAttempts) {
           console.error('MQTT max reconnect attempts reached. Stopping MQTT client.');
-          try { this.client.end(true); } catch (_) {}
+          eventEmitter.emit('mqtt_disconnected');
+          // ADDED CHECK: Thêm kiểm tra an toàn
+          if (this.client) try { this.client.end(true); } catch (_) {}
         }
       });
 
@@ -65,13 +83,19 @@ class MQTTClient {
           this.isConnected = true;
           this.reconnectAttempts = 0;
           this.subscribeToTopics();
-          this.client.off('connect', onConnect);
+          eventEmitter.emit('mqtt_connected');
+          if (this.client) this.client.off('connect', onConnect);
           resolve();
         };
+
+        // FIXED: Thêm kiểm tra an toàn quan trọng nhất ở đây
         const onError = (err) => {
-          this.client.off('error', onError);
+          if (this.client) { // <--- SỬA LỖI CHÍNH
+            this.client.off('error', onError);
+          }
           reject(err);
         };
+
         this.client.on('connect', onConnect);
         this.client.once('error', onError);
       });
@@ -81,6 +105,8 @@ class MQTTClient {
     }
   }
   
+  // ... các hàm khác giữ nguyên ...
+
   subscribeToTopics() {
     const topics = [
       config.mqtt.topics.sensorData,
@@ -88,13 +114,17 @@ class MQTTClient {
     ];
     
     topics.forEach(topic => {
-      this.client.subscribe(topic, (error) => {
-        if (error) {
-          console.error(`Failed to subscribe to topic ${topic}:`, error);
-        } else {
-          console.info(`Subscribed to topic: ${topic}`);
-        }
-      });
+      if (!topic) return;
+      // ADDED CHECK: Thêm kiểm tra an toàn
+      if (this.client) {
+        this.client.subscribe(topic, (error) => {
+          if (error) {
+            console.error(`Failed to subscribe to topic ${topic}:`, error);
+          } else {
+            console.info(`Subscribed to topic: ${topic}`);
+          }
+        });
+      }
     });
   }
   
@@ -102,13 +132,8 @@ class MQTTClient {
     try {
       const data = JSON.parse(message.toString());
       const handlers = this.messageHandlers.get(topic) || [];
-
       handlers.forEach(handler => {
-        try {
-          handler(data, topic);
-        } catch (error) {
-          console.error(`Error in message handler for topic ${topic}:`, error);
-        }
+        try { handler(data, topic); } catch (error) { console.error(`Error in message handler for topic ${topic}:`, error); }
       });
     } catch (error) {
       console.error(`Error parsing MQTT message from topic ${topic}:`, error);
@@ -123,10 +148,10 @@ class MQTTClient {
   }
 
   async publish(topic, message, options = {}) {
-    if (!this.isConnected) {
-      throw new Error('MQTT client not connected');
+    if (!this.isConnected || !this.client) {
+      console.warn(`Attempted to publish to ${topic} while disconnected. Message dropped.`);
+      return;
     }
-    
     try {
       const payload = typeof message === 'string' ? message : JSON.stringify(message);
       await new Promise((resolve, reject) => {
@@ -140,39 +165,20 @@ class MQTTClient {
       throw error;
     }
   }
-
-  // async publishDeviceControl(deviceId, action) {
-  //   const message = {
-  //     deviceId,
-  //     action,
-  //     timestamp: new Date().toISOString()
-  //   };
-    
-  //   await this.publish(config.mqtt.topics.deviceControl, message);
-  // }
   
   async disconnect() {
     if (this.client) {
       this.isShuttingDown = true;
-      // Remove listeners to avoid further retries and logs
-      try { this.client.removeAllListeners('message'); } catch (_) {}
-      try { this.client.removeAllListeners('connect'); } catch (_) {}
-      try { this.client.removeAllListeners('error'); } catch (_) {}
-      try { this.client.removeAllListeners('close'); } catch (_) {}
-      try { this.client.removeAllListeners('reconnect'); } catch (_) {}
-
       await new Promise((resolve) => {
-        try {
-          // Force end to cancel any pending reconnects
-          this.client.end(true, {}, () => resolve());
-        } catch (_) {
-          resolve();
-        }
+        try { this.client.end(true, {}, () => resolve()); } catch (_) { resolve(); }
       });
 
-      this.isConnected = false;
+      if (this.isConnected) {
+          this.isConnected = false;
+          eventEmitter.emit('mqtt_disconnected');
+      }
       this.client = null;
-      this.reconnectAttempts = 0;
+      
     }
   }
   

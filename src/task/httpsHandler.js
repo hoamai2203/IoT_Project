@@ -3,11 +3,21 @@ const http = require('http');
 const path = require('path');
 const helmet = require('helmet');
 const cors = require('cors');
+const multer = require("multer");
 
 const config = require('../../config/index');
 const routes = require('../routes/index');
 const { corsMiddleware, corsErrorHandler } = require('../middlewares/cors');
 const { errorHandler, notFound } = require('../middlewares/errorHandler');
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "public/uploads/reports"));
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname); // giữ nguyên tên file
+  }
+});
+const upload = multer({ storage });
 
 class HTTPSHandler {
   constructor() {
@@ -47,6 +57,11 @@ class HTTPSHandler {
       });
       this.app.use(notFound);
       this.app.use(errorHandler);
+      this.app.post("/uploadReport", upload.single("report"), (req, res) => {
+        if (!req.file) return res.status(400).json({ success: false, msg: "Chưa chọn file" });
+        res.json({ success: true, path: "/uploads/reports/" + req.file.originalname });
+      });
+
     } catch (error) {
       console.error('Failed to initialize HTTPS Handler:', error);
       throw error;

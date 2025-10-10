@@ -1,7 +1,7 @@
 const deviceService = require('../services/deviceService');
 const { HTTP_STATUS, ERROR_MESSAGES, SUCCESS_MESSAGES } = require('../utils/constants');
 const mqttService = require('../services/mqttService');
-
+const eventEmitter = require('../events/eventEmitter');
 
 class DeviceController {
   /**
@@ -40,7 +40,7 @@ class DeviceController {
       res.status(HTTP_STATUS.OK).json({
         success: true,
         message: SUCCESS_MESSAGES.DATA_RETRIEVED,
-        data: result.data,
+        data: result.data.reverse(),
         pagination: result.pagination
       });
     } catch (error) {
@@ -365,7 +365,8 @@ class DeviceController {
       
       // Publish control command to MQTT for realtime device action
       try {
-        await mqttService.publishDeviceControl(deviceId, action);
+        console.log(`Publishing to MQTT - Device: ${deviceId}, Action: ${action}`);
+        eventEmitter.emit('device_control', { deviceId, action, clientId: req.body.clientId });
       } catch (e) {
         console.error('MQTT publish failed for controlDevice:', e.message);
       }

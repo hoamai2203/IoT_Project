@@ -82,7 +82,7 @@ class DeviceService {
         throw new Error('Device ID is required');
       }
       
-      const validDeviceIds = ['led1', 'led2', 'led3'];
+      const validDeviceIds = ['led-phong-khach', 'led-phong-ngu', 'led-nha-bep'];
       if (!validDeviceIds.includes(deviceId)) {
         throw new Error('Invalid device ID');
       }
@@ -107,7 +107,7 @@ class DeviceService {
         throw new Error('Device ID is required');
       }
       
-      const validDeviceIds = ['led1', 'led2', 'led3'];
+      const validDeviceIds = ['led-phong-khach', 'led-phong-ngu', 'led-nha-bep'];
       if (!validDeviceIds.includes(deviceId)) {
         throw new Error('Invalid device ID');
       }
@@ -149,7 +149,7 @@ class DeviceService {
       }
       
       if (deviceId) {
-        const validDeviceIds = ['led1', 'led2', 'led3'];
+        const validDeviceIds = ['led-phong-khach', 'led-phong-ngu', 'led-nha-bep'];
         if (!validDeviceIds.includes(deviceId)) {
           throw new Error('Invalid device ID');
         }
@@ -191,7 +191,7 @@ class DeviceService {
       }
       
       if (deviceId) {
-        const validDeviceIds = ['led1', 'led2', 'led3'];
+        const validDeviceIds = ['led-phong-khach', 'led-phong-ngu', 'led-nha-bep'];
         if (!validDeviceIds.includes(deviceId)) {
           throw new Error('Invalid device ID');
         }
@@ -407,7 +407,7 @@ class DeviceService {
         throw new Error('Action is required');
       }
 
-      const validDeviceIds = ['led1', 'led2', 'led3'];
+      const validDeviceIds = ['led-phong-khach', 'led-phong-ngu', 'led-nha-bep'];
       if (!validDeviceIds.includes(deviceId)) {
         throw new Error('Invalid device ID');
       }

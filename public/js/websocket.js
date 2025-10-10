@@ -6,7 +6,7 @@ class WebsocketClient {
     this.reconnectInterval = Config.websocket.reconnectInterval;
     this.maxReconnectAttempts = Config.websocket.maxReconnectAttempts;
     this.heartbeatInterval = Config.websocket.heartbeatInterval;
-    
+ 
     this.ws = null;
     this.isConnected = false;
     this.reconnectAttempts = 0;
@@ -339,6 +339,23 @@ class WebsocketClient {
     }, 1000);
   }
 }
+
+
+const led1ToggleBtn = document.getElementById('led1Toggle');
+const led2ToggleBtn = document.getElementById('led2Toggle');
+const led3ToggleBtn = document.getElementById('led3Toggle');
+
+led1ToggleBtn.addEventListener('click', () => {
+  WSClient.controlDevice('led1', 'toggle');
+});
+
+led2ToggleBtn.addEventListener('click', () => {
+  WSClient.controlDevice('led2', 'toggle');
+});
+
+led3ToggleBtn.addEventListener('click', () => {
+  WSClient.controlDevice('led3', 'toggle');
+});
 
 // Create WebSocket client instance
 const WSClient = new WebsocketClient();

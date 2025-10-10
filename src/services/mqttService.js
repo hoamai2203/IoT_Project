@@ -1,8 +1,9 @@
 const mqttClient = require('../../config/mqtt');
 const sensorService = require('./sensorService');
 const deviceService = require('./deviceService');
+const websocketService = require('./websocketService'); // MOVED: Di chuyển lên đầu file
 const { MQTT_TOPICS } = require('../utils/constants');
-
+const eventEmitter = require('../events/eventEmitter'); // ADDED: Thêm event emitter
 
 class MQTTService {
   constructor() {
@@ -10,18 +11,40 @@ class MQTTService {
     this.messageHandlers = new Map();
     this.setupMessageHandlers();
   }
-  
-  async initialize() {
-    try {
-      await mqttClient.connect();
-      this.isConnected = true;
-      this.registerMessageHandlers();
-    } catch (error) {
-      console.error('Failed to initialize MQTT service:', error);
-      throw error;
-    }
+
+async initialize() {
+  try {
+    await mqttClient.connect();
+    this.registerClientEventListeners();
+    this.registerMessageHandlers();
+  } catch (error) {
+    console.error('Failed to initialize MQTT service:', error);
+    this.isConnected = false; // Đảm bảo trạng thái đúng khi có lỗi
+    throw error;
   }
-  
+}
+
+  // ADDED: Hàm mới để quản lý các sự kiện của MQTT client
+  registerClientEventListeners() {
+    mqttClient.getClient().on('connect', () => {
+      console.info('MQTT client connected to broker.');
+      this.isConnected = true;
+      eventEmitter.emit('mqtt_connected');
+    });
+
+    mqttClient.getClient().on('offline', () => {
+      console.warn('MQTT client went offline.');
+      this.isConnected = false;
+      eventEmitter.emit('mqtt_disconnected');
+    });
+
+    mqttClient.getClient().on('error', (error) => {
+        console.error('MQTT client error:', error);
+        this.isConnected = false;
+        eventEmitter.emit('mqtt_disconnected');
+    });
+  }
+
   setupMessageHandlers() {
     this.messageHandlers.set(MQTT_TOPICS.SENSOR_DATA, this.handleSensorData.bind(this));
     this.messageHandlers.set(MQTT_TOPICS.DEVICE_STATUS, this.handleDeviceStatus.bind(this));
@@ -32,19 +55,20 @@ class MQTTService {
       mqttClient.onMessage(topic, handler);
     });
   }
-  
+
   async handleSensorData(data, topic) {
     try {
       const sensorData = await sensorService.processMQTTSensorData(data);
-      this.broadcastSensorData(sensorData);
+      websocketService.broadcastSensorData(sensorData);
     } catch (error) {
-      this.broadcastSensorData({ error: 'Received data but failed to process', data });
+      console.error('Error handling sensor data:', error);
+      websocketService.broadcastSensorData({ error: 'Received data but failed to process', data });
     }
   }
-  
+
   async handleDeviceStatus(data, topic) {
     try {
-      this.broadcastDeviceStatus({
+      websocketService.broadcastDeviceStatus({
         deviceId: data.deviceId,
         action: data.action,
         status: data.status,
@@ -57,17 +81,9 @@ class MQTTService {
   }
 
   async publishDeviceControl(deviceId, action) {
+    await mqttClient.publish(MQTT_TOPICS.DEVICE_CONTROL, "Hello");
     try {
-      if (!this.isConnected) {
-        throw new Error('MQTT client not connected');
-      }
-      
-      const message = {
-        deviceId,
-        action,
-        timestamp: new Date().toISOString()
-      };
-
+      const message = { deviceId, action, timestamp: new Date().toISOString() };
       await mqttClient.publish(MQTT_TOPICS.DEVICE_CONTROL, message);
       console.info(`Published device control command: ${deviceId} -> ${action}`);
     } catch (error) {
@@ -76,39 +92,15 @@ class MQTTService {
     }
   }
 
-  async publishDeviceStatus(deviceStatus) {
-    try {
-      if (!this.isConnected) {
-        throw new Error('MQTT client not connected');
-      }
-      
-      await mqttClient.publish(MQTT_TOPICS.DEVICE_STATUS, deviceStatus);
-    } catch (error) {
-      console.error('Error publishing device status:', error);
-      throw error;
-    }
-  }
-
   broadcastSensorData(sensorData) {
-    try {
-      const websocketService = require('./websocketService');
       websocketService.broadcastSensorData(sensorData);
-    } catch (error) {
-      console.error('Error broadcasting sensor data:', error);
-    }
   }
-
   broadcastDeviceStatus(deviceStatus) {
-    try {
-      const websocketService = require('./websocketService');
       websocketService.broadcastDeviceStatus(deviceStatus);
-    } catch (error) {
-      console.error('Error broadcasting device status:', error);
-    }
   }
 
   isHealthy() {
-    return this.isConnected && mqttClient.isHealthy();
+    return this.isConnected && mqttClient.getClient().connected;
   }
 
   async disconnect() {
@@ -128,20 +120,6 @@ class MQTTService {
       subscribedTopics: Array.from(this.messageHandlers.keys()),
       brokerUrl: mqttClient.brokerUrl || 'N/A'
     };
-  }
-
-  async reconnect() {
-    try {
-      if (this.isConnected) {
-        await this.disconnect();
-      }
-      
-      await this.initialize();
-      console.info('MQTT service reconnected');
-    } catch (error) {
-      console.error('Error reconnecting MQTT service:', error);
-      throw error;
-    }
   }
 }
 

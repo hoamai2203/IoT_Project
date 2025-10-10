@@ -26,6 +26,7 @@ class WebSocketService {
     try {
       const { deviceId, action } = data;
       await mqttService.publishDeviceControl(deviceId, action);
+
       this.broadcastDeviceStatus({
         deviceId,
         action,
@@ -36,7 +37,7 @@ class WebSocketService {
       this.sendErrorToClient(data.clientId, 'Device control failed', error.message);
     }
   }
-  
+
   broadcastSensorData(sensorData) {
     try {
       websocketServer.broadcastSensorData(sensorData);
@@ -182,7 +183,7 @@ class WebSocketService {
       console.error(`Error subscribing client ${clientId} to topic ${topic}:`, error);
     }
   }
-  
+
   unsubscribeClient(clientId, topic) {
     try {
       const client = this.getClient(clientId);

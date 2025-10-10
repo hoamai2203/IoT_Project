@@ -13,3 +13,6 @@ INSERT INTO tbl_device_control (device_id, action, status) VALUES
 ('led1', 'toggle', 'off'),
 ('led2', 'on', 'on'),
 ('led3', 'off', 'off');
+
+
+SELECT * FROM tbl_device_control;

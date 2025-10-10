@@ -36,7 +36,7 @@ class Config {
       },
       options: {
         clean: true,
-        connectTimeout: 4000,
+        connectTimeout: 40000,
         reconnectPeriod: 1000,
         keepalive: 60
       }
