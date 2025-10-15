@@ -5,7 +5,6 @@ const { asyncHandler } = require('../middlewares/errorHandler');
 
 const router = express.Router();
 
-// Apply sanitization middleware to all routes
 router.use(sanitizeInput());
 
 /**
@@ -13,7 +12,7 @@ router.use(sanitizeInput());
  * @desc    Get sensor data with pagination and filters
  * @access  Public
  */
-router.get('/', 
+router.get('/',
   validatePagination(),
   validateSensorType(),
   validateDateRange(),
@@ -111,5 +110,7 @@ router.post('/',
 router.post('/cleanup',
   asyncHandler(sensorController.cleanupOldData)
 );
+
+router.get('/search/time', sensorController.searchSensorDataByTime);
 
 module.exports = router;

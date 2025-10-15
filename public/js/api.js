@@ -372,15 +372,15 @@ class APIClient {
       if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
         throw new Error('Lỗi kết nối mạng. Vui lòng kiểm tra kết nối internet.');
       }
-      
+
       if (error.message.includes('404')) {
         throw new Error('Không tìm thấy dữ liệu.');
       }
-      
+
       if (error.message.includes('500')) {
         throw new Error('Lỗi máy chủ. Vui lòng thử lại sau.');
       }
-      
+
       throw error;
     }
   };

@@ -25,7 +25,7 @@
 
       <div class="toolbar">
         <div class="search">
-          <input id="sensorSearchInput" type="text" placeholder="Giá trị cần tìm">
+          <input id="sensorSearchInput" type="text" placeholder="Nhập thời gian hoặc khoảng: dd/mm/yy hh:mm - dd/mm/yy hh:mm">
           <button id="sensorSearchBtn" class="btn-search" aria-label="Tìm">🔍</button>
         </div>
         <select id="sensorFieldSelect" class="filter" title="Trường">
@@ -33,6 +33,7 @@
           <option value="temperature">Nhiệt độ</option>
           <option value="humidity">Độ ẩm</option>
           <option value="light_intensity">Ánh sáng</option>
+          <option value="created_at">Thời gian</option>
         </select>
       </div>
 
@@ -40,11 +41,11 @@
         <table id="sensorTable">
           <thead>
             <tr>
-              <th data-sort="id">ID</th>
-              <th data-sort="temperature">Nhiệt độ</th>
-              <th data-sort="humidity">Độ ẩm</th>
-              <th data-sort="light_intensity">Ánh sáng</th>
-              <th data-sort="created_at">Thời gian</th>
+              <th data-sort="id"><span>ID</span> <span class="sort-icon">⇅</span></th>
+              <th data-sort="temperature"><span>Nhiệt độ</span> <span class="sort-icon">⇅</span></th>
+              <th data-sort="humidity"><span>Độ ẩm</span> <span class="sort-icon">⇅</span></th>
+              <th data-sort="light_intensity"><span>Ánh sáng</span> <span class="sort-icon">⇅</span></th>
+              <th data-sort="created_at"><span>Thời gian</span> <span class="sort-icon">⇅</span></th>
             </tr>
           </thead>
           <tbody id="sensorTbody"></tbody>

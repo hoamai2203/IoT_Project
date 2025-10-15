@@ -127,6 +127,16 @@ class SensorModel {
           params.push(parseFloat(searchValue));
         }
       }
+
+      if (searchValue && searchField === 'created_at') {
+        const date = parse(searchValue);
+        if (date) {
+          const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+          const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+          whereConditions.push('created_at BETWEEN ? AND ?');
+          params.push(startOfDay, endOfDay);
+        }
+      }
       
       const where = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
       

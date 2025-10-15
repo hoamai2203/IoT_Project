@@ -236,15 +236,65 @@ const validateSensorType = () => {
  * Validate date range parameters
  * @returns {Function} Middleware function
  */
+// const validateDateRange = () => {
+//   return (req, res, next) => {
+//     try {
+//       const { startDate, endDate } = req.query;
+      
+//       if (startDate && endDate) {
+//         const start = new Date(startDate);
+//         const end = new Date(endDate);
+        
+//         if (isNaN(start.getTime())) {
+//           return res.status(HTTP_STATUS.BAD_REQUEST).json({
+//             success: false,
+//             message: ERROR_MESSAGES.INVALID_REQUEST,
+//             error: 'Invalid start date format'
+//           });
+//         }
+        
+//         if (isNaN(end.getTime())) {
+//           return res.status(HTTP_STATUS.BAD_REQUEST).json({
+//             success: false,
+//             message: ERROR_MESSAGES.INVALID_REQUEST,
+//             error: 'Invalid end date format'
+//           });
+//         }
+        
+//         if (start > end) {
+//           return res.status(HTTP_STATUS.BAD_REQUEST).json({
+//             success: false,
+//             message: ERROR_MESSAGES.INVALID_REQUEST,
+//             error: 'Start date must be before end date'
+//           });
+//         }
+//       }
+      
+//       next();
+//     } catch (error) {
+//       return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+//         success: false,
+//         message: ERROR_MESSAGES.INTERNAL_ERROR,
+//         error: error.message
+//       });
+//     }
+//   };
+// };
+/**
+ * Validate date range parameters
+ * @returns {Function} Middleware function
+ */
 const validateDateRange = () => {
   return (req, res, next) => {
     try {
       const { startDate, endDate } = req.query;
-      
+
+      // Chỉ thực hiện khi có cả startDate và endDate
       if (startDate && endDate) {
         const start = new Date(startDate);
         const end = new Date(endDate);
-        
+
+        // Kiểm tra định dạng ngày hợp lệ
         if (isNaN(start.getTime())) {
           return res.status(HTTP_STATUS.BAD_REQUEST).json({
             success: false,
@@ -252,7 +302,6 @@ const validateDateRange = () => {
             error: 'Invalid start date format'
           });
         }
-        
         if (isNaN(end.getTime())) {
           return res.status(HTTP_STATUS.BAD_REQUEST).json({
             success: false,
@@ -260,7 +309,19 @@ const validateDateRange = () => {
             error: 'Invalid end date format'
           });
         }
-        
+
+        // === PHẦN SỬA ĐỔI QUAN TRỌNG ===
+        // Kiểm tra xem chuỗi endDate có chứa thông tin về giờ (T) hay không.
+        // Nếu không có, tức là người dùng chỉ muốn tìm theo ngày.
+        // Chuẩn ISO 8601 dùng 'T' để ngăn cách ngày và giờ, ví dụ: "2025-10-10T14:30:00"
+        const endDateHasTime = endDate.includes('T');
+        if (!endDateHasTime) {
+          // Đặt giờ của endDate về cuối ngày để bao quát tất cả dữ liệu trong ngày đó
+          end.setUTCHours(23, 59, 59, 999);
+        }
+        // ================================
+
+        // Kiểm tra logic startDate phải trước endDate
         if (start > end) {
           return res.status(HTTP_STATUS.BAD_REQUEST).json({
             success: false,
@@ -268,8 +329,11 @@ const validateDateRange = () => {
             error: 'Start date must be before end date'
           });
         }
+
+        // Gắn khoảng thời gian đã được xác thực và điều chỉnh vào request
+        req.validatedDateRange = { start, end };
       }
-      
+
       next();
     } catch (error) {
       return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({

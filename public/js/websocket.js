@@ -248,6 +248,7 @@ class WebsocketClient {
 
   // Control device
   controlDevice(deviceId, action) {
+    console.log(`Controlling device ${deviceId} with action ${action}`);
     this.send({
       type: 'device_control',
       deviceId: deviceId,

@@ -1,7 +1,5 @@
 const deviceService = require('../services/deviceService');
 const { HTTP_STATUS, ERROR_MESSAGES, SUCCESS_MESSAGES } = require('../utils/constants');
-const mqttService = require('../services/mqttService');
-const eventEmitter = require('../events/eventEmitter');
 
 class DeviceController {
   /**
@@ -23,7 +21,7 @@ class DeviceController {
         searchValue,
         searchField
       } = req.query;
-      
+
       const result = await deviceService.getDeviceControlRecords({
         page: parseInt(page),
         limit: parseInt(limit),
@@ -36,7 +34,7 @@ class DeviceController {
         searchValue,
         searchField
       });
-      
+
       res.status(HTTP_STATUS.OK).json({
         success: true,
         message: SUCCESS_MESSAGES.DATA_RETRIEVED,
@@ -52,7 +50,7 @@ class DeviceController {
       });
     }
   }
-  
+
   /**
    * Get device control record by ID
    * @param {Object} req - Express request object
@@ -61,7 +59,7 @@ class DeviceController {
   async getDeviceControlById(req, res) {
     try {
       const { id } = req.params;
-      
+
       if (!id || isNaN(id)) {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
@@ -69,9 +67,9 @@ class DeviceController {
           error: 'Invalid device control record ID'
         });
       }
-      
+
       const deviceControl = await deviceService.getDeviceControlById(parseInt(id));
-      
+
       if (!deviceControl) {
         return res.status(HTTP_STATUS.NOT_FOUND).json({
           success: false,
@@ -79,7 +77,7 @@ class DeviceController {
           error: 'Device control record not found'
         });
       }
-      
+
       res.status(HTTP_STATUS.OK).json({
         success: true,
         message: SUCCESS_MESSAGES.DATA_RETRIEVED,
@@ -94,7 +92,7 @@ class DeviceController {
       });
     }
   }
-  
+
   /**
    * Get latest device status for all devices
    * @param {Object} req - Express request object
@@ -103,7 +101,7 @@ class DeviceController {
   async getLatestDeviceStatus(req, res) {
     try {
       const latestStatus = await deviceService.getLatestDeviceStatus();
-      
+
       res.status(HTTP_STATUS.OK).json({
         success: true,
         message: SUCCESS_MESSAGES.DATA_RETRIEVED,
@@ -118,7 +116,7 @@ class DeviceController {
       });
     }
   }
-  
+
   /**
    * Get latest status for specific device
    * @param {Object} req - Express request object
@@ -127,7 +125,7 @@ class DeviceController {
   async getLatestDeviceStatusById(req, res) {
     try {
       const { deviceId } = req.params;
-      
+
       if (!deviceId) {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
@@ -135,9 +133,9 @@ class DeviceController {
           error: 'Device ID is required'
         });
       }
-      
+
       const deviceStatus = await deviceService.getLatestDeviceStatusById(deviceId);
-      
+
       if (!deviceStatus) {
         return res.status(HTTP_STATUS.NOT_FOUND).json({
           success: false,
@@ -145,7 +143,7 @@ class DeviceController {
           error: 'Device status not found'
         });
       }
-      
+
       res.status(HTTP_STATUS.OK).json({
         success: true,
         message: SUCCESS_MESSAGES.DATA_RETRIEVED,
@@ -160,7 +158,7 @@ class DeviceController {
       });
     }
   }
-  
+
   /**
    * Get device control history
    * @param {Object} req - Express request object
@@ -170,7 +168,7 @@ class DeviceController {
     try {
       const { deviceId } = req.params;
       const { limit = 50 } = req.query;
-      
+
       if (!deviceId) {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
@@ -178,12 +176,12 @@ class DeviceController {
           error: 'Device ID is required'
         });
       }
-      
+
       const history = await deviceService.getDeviceControlHistory(
         deviceId,
         parseInt(limit)
       );
-      
+
       res.status(HTTP_STATUS.OK).json({
         success: true,
         message: SUCCESS_MESSAGES.DATA_RETRIEVED,
@@ -198,7 +196,7 @@ class DeviceController {
       });
     }
   }
-  
+
   /**
    * Get device control statistics
    * @param {Object} req - Express request object
@@ -207,13 +205,13 @@ class DeviceController {
   async getDeviceControlStatistics(req, res) {
     try {
       const { startDate, endDate, deviceId } = req.query;
-      
+
       const statistics = await deviceService.getDeviceControlStatistics({
         startDate: startDate ? new Date(startDate) : undefined,
         endDate: endDate ? new Date(endDate) : undefined,
         deviceId
       });
-      
+
       res.status(HTTP_STATUS.OK).json({
         success: true,
         message: SUCCESS_MESSAGES.DATA_RETRIEVED,
@@ -228,7 +226,7 @@ class DeviceController {
       });
     }
   }
-  
+
   /**
    * Get device usage statistics by hour
    * @param {Object} req - Express request object
@@ -237,7 +235,7 @@ class DeviceController {
   async getDeviceUsageByHour(req, res) {
     try {
       const { startDate, endDate } = req.query;
-      
+
       if (!startDate || !endDate) {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
@@ -245,12 +243,12 @@ class DeviceController {
           error: 'Start date and end date are required'
         });
       }
-      
+
       const usageStats = await deviceService.getDeviceUsageByHour(
         new Date(startDate),
         new Date(endDate)
       );
-      
+
       res.status(HTTP_STATUS.OK).json({
         success: true,
         message: SUCCESS_MESSAGES.DATA_RETRIEVED,
@@ -265,7 +263,7 @@ class DeviceController {
       });
     }
   }
-  
+
   /**
    * Search device control records
    * @param {Object} req - Express request object
@@ -281,7 +279,7 @@ class DeviceController {
         sortField = 'created_at',
         sortOrder = 'DESC'
       } = req.query;
-      
+
       if (!searchValue || !searchField) {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
@@ -289,7 +287,7 @@ class DeviceController {
           error: 'Search value and field are required'
         });
       }
-      
+
       const result = await deviceService.searchDeviceControl({
         searchValue,
         searchField,
@@ -298,7 +296,7 @@ class DeviceController {
         sortField,
         sortOrder
       });
-      
+
       res.status(HTTP_STATUS.OK).json({
         success: true,
         message: SUCCESS_MESSAGES.DATA_RETRIEVED,
@@ -314,7 +312,7 @@ class DeviceController {
       });
     }
   }
-  
+
   /**
    * Get device control count
    * @param {Object} req - Express request object
@@ -323,14 +321,14 @@ class DeviceController {
   async getDeviceControlCount(req, res) {
     try {
       const { startDate, endDate, deviceId, action } = req.query;
-      
+
       const count = await deviceService.getDeviceControlCount({
         startDate: startDate ? new Date(startDate) : undefined,
         endDate: endDate ? new Date(endDate) : undefined,
         deviceId,
         action
       });
-      
+
       res.status(HTTP_STATUS.OK).json({
         success: true,
         message: SUCCESS_MESSAGES.DATA_RETRIEVED,
@@ -345,59 +343,7 @@ class DeviceController {
       });
     }
   }
-  
-  /**
-   * Control device (turn on/off/toggle)
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
-  async controlDevice(req, res) {
-    try {
-      const { deviceId, action } = req.body;
-      
-      if (!deviceId || !action) {
-        return res.status(HTTP_STATUS.BAD_REQUEST).json({
-          success: false,
-          message: ERROR_MESSAGES.INVALID_REQUEST,
-          error: 'Device ID and action are required'
-        });
-      }
-      
-      // Publish control command to MQTT for realtime device action
-      try {
-        console.log(`Publishing to MQTT - Device: ${deviceId}, Action: ${action}`);
-        eventEmitter.emit('device_control', { deviceId, action, clientId: req.body.clientId });
-      } catch (e) {
-        console.error('MQTT publish failed for controlDevice:', e.message);
-      }
 
-      const result = await deviceService.controlDevice(deviceId, action);
-      
-      res.status(HTTP_STATUS.OK).json({
-        success: true,
-        message: SUCCESS_MESSAGES.DEVICE_CONTROLLED,
-        data: result
-      });
-    } catch (error) {
-      console.error('Error in controlDevice controller:', error);
-      
-      if (error.message.includes('Invalid device ID') || 
-          error.message.includes('Invalid action')) {
-        return res.status(HTTP_STATUS.BAD_REQUEST).json({
-          success: false,
-          message: ERROR_MESSAGES.INVALID_REQUEST,
-          error: error.message
-        });
-      }
-      
-      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        message: ERROR_MESSAGES.INTERNAL_ERROR,
-        error: error.message
-      });
-    }
-  }
-  
   /**
    * Get device status summary
    * @param {Object} req - Express request object
@@ -406,7 +352,7 @@ class DeviceController {
   async getDeviceStatusSummary(req, res) {
     try {
       const summary = await deviceService.getDeviceStatusSummary();
-      
+
       res.status(HTTP_STATUS.OK).json({
         success: true,
         message: SUCCESS_MESSAGES.DATA_RETRIEVED,
@@ -421,7 +367,7 @@ class DeviceController {
       });
     }
   }
-  
+
   /**
    * Create device control record (for testing or manual entry)
    * @param {Object} req - Express request object
@@ -430,7 +376,7 @@ class DeviceController {
   async createDeviceControl(req, res) {
     try {
       const deviceControl = await deviceService.createDeviceControl(req.body);
-      
+
       res.status(HTTP_STATUS.CREATED).json({
         success: true,
         message: SUCCESS_MESSAGES.DATA_CREATED,
@@ -438,7 +384,7 @@ class DeviceController {
       });
     } catch (error) {
       console.error('Error in createDeviceControl controller:', error);
-      
+
       if (error.message.includes('Validation error')) {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
@@ -446,7 +392,7 @@ class DeviceController {
           error: error.message
         });
       }
-      
+
       res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: ERROR_MESSAGES.INTERNAL_ERROR,
@@ -454,7 +400,7 @@ class DeviceController {
       });
     }
   }
-  
+
   /**
    * Clean up old device control records
    * @param {Object} req - Express request object
@@ -463,9 +409,9 @@ class DeviceController {
   async cleanupOldData(req, res) {
     try {
       const { daysToKeep = 30 } = req.body;
-      
+
       const deletedCount = await deviceService.cleanupOldData(daysToKeep);
-      
+
       res.status(HTTP_STATUS.OK).json({
         success: true,
         message: `Cleaned up ${deletedCount} old device control records`,
@@ -480,6 +426,42 @@ class DeviceController {
       });
     }
   }
+
+  async searchDeviceDataByTime(req, res) {
+    try {
+      const { startDate, endDate, deviceId, page = 1, limit = 10, sortField = 'created_at', sortOrder = 'DESC' } = req.query;
+
+      if (!startDate || !endDate) {
+        return res.status(400).json({ success: false, message: 'Start date and end date are required' });
+      }
+
+      // Gọi service đúng
+      const allData = await deviceService.getDeviceControlByDateRange(
+        new Date(startDate),
+        new Date(endDate),
+        deviceId || null
+      );
+
+      // Phân trang thủ công
+      const startIdx = (page - 1) * limit;
+      const paginatedData = allData.slice(startIdx, startIdx + Number(limit));
+
+      res.status(200).json({
+        success: true,
+        data: paginatedData,
+        pagination: {
+          page: Number(page),
+          totalPages: Math.ceil(allData.length / limit),
+          totalItems: allData.length
+        }
+      });
+
+    } catch (err) {
+      console.error('Error in searchDeviceDataByTime:', err);
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+
 }
 
 module.exports = new DeviceController();

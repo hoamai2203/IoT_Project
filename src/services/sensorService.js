@@ -74,15 +74,15 @@ class SensorService {
         startDate,
         endDate
       } = options;
-      
+
       if (startDate && !DateHelper.isValid(startDate)) {
         throw new Error('Invalid start date');
       }
-      
+
       if (endDate && !DateHelper.isValid(endDate)) {
         throw new Error('Invalid end date');
       }
-      
+
       const statistics = await sensorModel.getStatistics({
         startDate,
         endDate
@@ -99,17 +99,17 @@ class SensorService {
       if (!DateHelper.isValid(startDate)) {
         throw new Error('Invalid start date');
       }
-      
+
       if (!DateHelper.isValid(endDate)) {
         throw new Error('Invalid end date');
       }
-      
+
       if (DateHelper.isAfter(startDate, endDate)) {
         throw new Error('Start date must be before end date');
       }
-      
+
       const sensorData = await sensorModel.findByDateRange(startDate, endDate);
-      
+
       console.info(`Retrieved ${sensorData.length} sensor data records for date range`);
       return sensorData;
     } catch (error) {
@@ -117,10 +117,10 @@ class SensorService {
       throw error;
     }
   }
-  
+
   async searchSensorData(searchParams) {
     try {
-      const {
+      let {
         searchValue,
         searchField,
         page = 1,
@@ -128,29 +128,63 @@ class SensorService {
         sortField = 'created_at',
         sortOrder = 'DESC'
       } = searchParams;
-      
-      if (!searchValue || !searchField) {
-        throw new Error('Search value and field are required');
+
+      if (!searchValue) {
+        throw new Error('Search value is required');
       }
-      
-      const validSearchFields = ['temperature', 'humidity', 'light_intensity', 'sensor_type'];
-      if (!validSearchFields.includes(searchField)) {
+
+      // Regex hỗ trợ ngày + giờ: dd/mm/yyyy HH:mm
+      const dateTimeRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{1,2}))?$/;
+      const rangeRegex = /^(.+)\s*-\s*(.+)$/;
+
+      let startDate, endDate;
+
+      if (searchField === 'created_at' || dateTimeRegex.test(searchValue)) {
+        const rangeMatch = searchValue.match(rangeRegex);
+
+        if (rangeMatch) {
+          startDate = new Date(rangeMatch[1]);
+          endDate = new Date(rangeMatch[2]);
+        } else {
+          const dateMatch = searchValue.match(dateTimeRegex);
+          if (dateMatch) {
+            const [_, dd, mm, yyyy, hh, min] = dateMatch;
+            startDate = new Date(`${yyyy}-${mm}-${dd}T${hh || '00'}:${min || '00'}:00Z`);
+            endDate = hh && min
+              ? new Date(startDate.getTime() + 59_999) // 1 phút nếu có giờ:phút
+              : new Date(`${yyyy}-${mm}-${dd}T23:59:59Z`); // cả ngày nếu không có giờ
+          } else {
+            startDate = new Date(searchValue);
+            endDate = startDate;
+          }
+        }
+
+        const data = await sensorModel.findByDateRange(startDate, endDate, {
+          page, limit, sortField, sortOrder
+        });
+
+        return data;
+      }
+
+      // Các trường số khác (temperature, humidity...)
+      const numericFields = ['temperature', 'humidity', 'light_intensity'];
+      if (!numericFields.includes(searchField)) {
         throw new Error('Invalid search field');
       }
-      
+
+      const numericValue = parseFloat(searchValue);
+      if (isNaN(numericValue)) {
+        throw new Error('Search value must be a number for this field');
+      }
+
       const result = await sensorModel.findPaginated({
-        page,
-        limit,
-        sortField,
-        sortOrder,
-        searchValue,
-        searchField
+        page, limit, sortField, sortOrder, searchField, searchValue: numericValue
       });
-      
-      console.info(`Search completed: ${result.data.length} results found`);
+
       return result;
+
     } catch (error) {
-      console.error('Error searching sensor data:', error);
+      console.error('Error in searchSensorData (by hour):', error);
       throw error;
     }
   }
@@ -170,7 +204,7 @@ class SensorService {
       if (daysToKeep < 1) {
         throw new Error('Days to keep must be at least 1');
       }
-      
+
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
       const deletedCount = await sensorModel.deleteOldData(cutoffDate);
@@ -198,7 +232,7 @@ class SensorService {
   async getDashboardSummary() {
     try {
       const chartData = await this.getSensorDataForChart(10);
-      
+
       const summary = {
         chart: chartData,
       };

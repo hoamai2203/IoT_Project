@@ -138,4 +138,6 @@ router.post('/cleanup',
   asyncHandler(deviceController.cleanupOldData)
 );
 
+router.get('/search/time', deviceController.searchDeviceDataByTime); // đúng
+
 module.exports = router;

@@ -99,8 +99,7 @@ const Dashboard = {
       el.addEventListener(el.type === 'checkbox' ? 'change' : 'click', handler);
     });
   },
-
-  // Initialize websocket and UI event listeners
+  
   initEventListeners() {
     // Chart refresh button
     const refreshBtn = document.getElementById('refreshChart');
