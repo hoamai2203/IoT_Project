@@ -17,6 +17,10 @@ class WebSocketService {
         console.error('Failed to publish device control:', err);
       });
     });
+
+    mqttClient.on('message:device/response', (data) => {
+      wsServer.broadcastDeviceStatus(data);
+    });
   }
 
   broadcast(message) {

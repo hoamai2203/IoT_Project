@@ -130,7 +130,7 @@ class SensorService {
       } = searchParams;
 
       if (!searchValue) {
-        throw new Error('Search value is required');
+        console.log('serchValue is required', searchValue);
       }
 
       // Regex hỗ trợ ngày + giờ: dd/mm/yyyy HH:mm

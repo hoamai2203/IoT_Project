@@ -213,7 +213,7 @@ class DeviceService {
    * @param {Date} endDate - End date
    * @returns {Promise<Array>} Usage statistics by hour
    */
-  async getDeviceUsageByHour(startDate, endDate) {
+  async getDeviceUsageByHour(startDate, endDate, groupBy) {
     try {
       if (!DateHelper.isValid(startDate)) {
         throw new Error('Invalid start date');
@@ -222,12 +222,15 @@ class DeviceService {
       if (!DateHelper.isValid(endDate)) {
         throw new Error('Invalid end date');
       }
+      if (!DateHelper.isValid(groupBy)) {
+        throw new Error('Invalid group by date');
+      }
       
-      if (DateHelper.isAfter(startDate, endDate)) {
+      if (DateHelper.isAfter(startDate, endDate, groupBy)) {
         throw new Error('Start date must be before end date');
       }
       
-      const usageStats = await deviceModel.getUsageByHour(startDate, endDate);
+      const usageStats = await deviceModel.getUsageByHour(startDate, endDate, groupBy);
       
       console.info(`Retrieved device usage statistics for ${usageStats.length} hours`);
       return usageStats;

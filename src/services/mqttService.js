@@ -8,8 +8,12 @@ class MQTTService {
 
   setupHandlers() {
     mqttClient.on('message', (topic, data) => {
-      console.log('MQTT message:', topic);
-      // Process message, save to DB, etc.
+      console.log(`[MQTT] Message received on ${topic}:`, data);
+    });
+
+    mqttClient.on('message:device/response', (data) => {
+      console.log('[MQTT] Device response:', data);
+      this.emit('device_response', data);
     });
 
     mqttClient.on('connected', () => {

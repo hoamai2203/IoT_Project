@@ -87,12 +87,12 @@ const profileSchemas = {
 const websocketSchemas = {
   subscribe: Joi.object({
     type: Joi.string().valid('subscribe').required(),
-    topic: Joi.string().valid('sensor_data', 'device_status', 'all').required()
+    topic: Joi.string().valid('sensor_data', 'device_response', 'all').required()
   }),
   
   unsubscribe: Joi.object({
     type: Joi.string().valid('unsubscribe').required(),
-    topic: Joi.string().valid('sensor_data', 'device_status', 'all').required()
+    topic: Joi.string().valid('sensor_data', 'device_response', 'all').required()
   }),
   
   deviceControl: Joi.object({

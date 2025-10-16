@@ -60,7 +60,7 @@ class WebsocketClient {
       
       // Subscribe to default topics
       this.subscribe('sensor_data');
-      this.subscribe('device_status');
+      this.subscribe('device_response');
     };
 
     this.ws.onmessage = (event) => {
@@ -106,8 +106,8 @@ class WebsocketClient {
       case 'sensor_data':
         this.emit('sensor_data', data.data);
         break;
-      case 'device_status':
-        this.emit('device_status', data.data);
+      case 'device_response':
+        this.emit('device_response', data.data);
         break;
       case 'error':
         this.handleErrorMessage(data);

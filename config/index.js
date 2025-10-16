@@ -32,7 +32,7 @@ class Config {
       topics: {
         sensorData: process.env.MQTT_TOPIC_SENSOR_DATA || 'sensor/data',
         deviceControl: process.env.MQTT_TOPIC_DEVICE_CONTROL || 'device/control',
-        deviceStatus: process.env.MQTT_TOPIC_DEVICE_STATUS || 'device/status'
+        deviceResponse: process.env.MQTT_TOPIC_DEVICE_RESPONSE || 'device/response'
       },
       options: {
         clean: true,

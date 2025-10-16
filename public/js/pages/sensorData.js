@@ -89,6 +89,31 @@
 
     if (state.searchValue && state.searchField) {
       if (state.searchField === 'created_at' && typeof state.searchValue === 'object') {
+        if (state.searchValue.created_at) {
+          if (state.searchValue.created_at.includes('-')) {
+            const q = {
+              searchField: 'created_at',
+              time: state.searchValue.created_at,
+              ...params
+            };
+          } else {
+            const q = {
+              searchField: 'created_at',
+              date: state.searchValue.created_at,
+              ...params
+            }
+          }
+          const queryString = new URLSearchParams(q).toString();
+          console.log('Query String:', queryString);
+          res = await API.get(`/sensors/search/time?${queryString}`);
+          if (res && res.success) {
+            render(res.data, res.pagination || { page: 1, totalPages: 1 });
+          } else {
+            render([], { page: 1, totalPages: 1 });
+          }
+          updateSortIcons();
+          return;
+        }
         // Tìm theo khoảng thời gian
         const { start, end } = state.searchValue;
         const q = {
@@ -98,6 +123,7 @@
           ...params
         };
         const queryString = new URLSearchParams(q).toString();
+        console.log('Query String:', queryString);
         res = await API.get(`/sensors/search/time?${queryString}`);
       } else {
         // Tìm theo giá trị
@@ -197,9 +223,26 @@
     state.searchField = fieldSelect.value;
     const value = searchInput.value.trim();
     if (state.searchField === 'created_at' && value) {
-      state.searchValue = parseDateInput(value);
-    } else {
-      state.searchValue = value;
+      if (value.includes('-')) {
+        const [startRaw, endRaw] = value.split('-').map(s => s.trim());
+        const startObj = parseDateInput(startRaw);
+        const endObj = parseDateInput(endRaw);
+        state.searchValue = {
+          start: startObj.start,
+          end: endObj.end
+        };
+      } else if (value.includes(' ')) {
+        const dtObj = parseDateInput(value);
+        state.searchValue = {
+          start: dtObj.start,
+          end: dtObj.end
+        };
+      } else {
+        // Only time or date
+        state.searchValue = {
+          created_at: value
+        }
+      }
     }
     state.page = 1;
     load();

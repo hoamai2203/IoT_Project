@@ -112,7 +112,7 @@ const App = {
     });
 
     // Device status updates
-    WebSocketClient.on('device_status', (data) => {
+    WebSocketClient.on('device_response', (data) => {
       this.updateDeviceStatus(data);
     });
 

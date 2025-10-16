@@ -292,6 +292,7 @@ class DeviceModel {
         FROM ${this.table}
         WHERE created_at >= ? AND created_at <= ?
         GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00'), device_id
+
         ORDER BY hour ASC, device_id
       `;
       
@@ -302,6 +303,7 @@ class DeviceModel {
       throw error;
     }
   }
+  
   
   /**
    * Get device control records by action

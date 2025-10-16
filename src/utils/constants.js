@@ -37,7 +37,7 @@ const WS_MESSAGE_TYPES = {
   DEVICE_CONTROL: 'device_control',
   DEVICE_CONTROL_RESPONSE: 'device_control_response',
   SENSOR_DATA: 'sensor_data',
-  DEVICE_STATUS: 'device_status',
+  DEVICE_RESPONSE: 'device_response',
   ERROR: 'error'
 };
 
@@ -45,7 +45,7 @@ const WS_MESSAGE_TYPES = {
 const MQTT_TOPICS = {
   SENSOR_DATA: config.mqtt.topics.sensorData,
   DEVICE_CONTROL: config.mqtt.topics.deviceControl,
-  DEVICE_STATUS: config.mqtt.topics.deviceStatus
+  DEVICE_RESPONSE: config.mqtt.topics.deviceStatus
 };
 
 // Database Tables

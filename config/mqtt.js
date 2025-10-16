@@ -117,7 +117,7 @@ class MQTTClient extends EventEmitter {
   subscribeToDefaultTopics() {
     const topics = [
       config.mqtt.topics.sensorData,
-      config.mqtt.topics.deviceStatus
+      config.mqtt.topics.deviceResponse
     ];
 
     topics.forEach(topic => {

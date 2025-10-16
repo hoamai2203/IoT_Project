@@ -192,7 +192,7 @@ class WebSocketServer extends EventEmitter {
     });
 
     this.sendToClient(client, {
-      type: "device_control_ack",
+      type: "device_response",
       deviceId,
       action,
       status: "received",
@@ -262,7 +262,7 @@ class WebSocketServer extends EventEmitter {
   }
 
   broadcastDeviceStatus(data) {
-    return this.broadcast(data, { topic: "device_status" });
+    return this.broadcast(data, { topic: "device_response" });
   }
 
   startHeartbeat() {

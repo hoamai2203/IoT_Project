@@ -119,8 +119,7 @@ const Dashboard = {
 
     // WebSocket events
     WebSocketClient.on('sensor_data', (data) => this.onRealtimeSensor(data));
-
-    WebSocketClient.on('device_status', (data) => this.onRealtimeDeviceStatus(data));
+    WebSocketClient.on('device_response', (data) => this.onRealtimeDeviceStatus(data));
   },
 
   // Initial data load
@@ -264,10 +263,6 @@ const Dashboard = {
   // Handle device control from UI
   async handleDeviceControl(deviceId, action) {
     try {
-      // Update UI immediately for better UX
-      this.updateDeviceDisplay({ device_id: deviceId, status: action === 'on' ? 'on' : 'off' });
-      
-      // Send control command via WebSocket
       WebSocketClient.controlDevice(deviceId, action);
     } catch (error) {
       console.error('Error controlling device:', error);

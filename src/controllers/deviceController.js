@@ -234,9 +234,9 @@ class DeviceController {
    */
   async getDeviceUsageByHour(req, res) {
     try {
-      const { startDate, endDate } = req.query;
+      const { startDate, endDate, groupBy } = req.query;
 
-      if (!startDate || !endDate) {
+      if (!startDate || !endDate || !groupBy) {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
           message: ERROR_MESSAGES.INVALID_REQUEST,
@@ -246,7 +246,8 @@ class DeviceController {
 
       const usageStats = await deviceService.getDeviceUsageByHour(
         new Date(startDate),
-        new Date(endDate)
+        new Date(endDate),
+        new Date(groupBy)
       );
 
       res.status(HTTP_STATUS.OK).json({
@@ -263,6 +264,7 @@ class DeviceController {
       });
     }
   }
+  
 
   /**
    * Search device control records
